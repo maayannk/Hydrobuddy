@@ -1,0 +1,136 @@
+{
+  "name": "hydrate-buddy",
+  "displayName": "Hydrate Buddy",
+  "description": "A cute, non-intrusive water-break reminder for developers. A little droplet buddy pops up when it's time to drink water.",
+  "version": "1.0.0",
+  "publisher": "hydrate-buddy",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "water",
+    "hydration",
+    "reminder",
+    "health",
+    "break",
+    "wellness"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "hydrateBuddy.showDashboard",
+        "title": "Show Dashboard",
+        "category": "Hydrate Buddy",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "hydrateBuddy.remindNow",
+        "title": "Remind Me Now",
+        "category": "Hydrate Buddy"
+      },
+      {
+        "command": "hydrateBuddy.logWater",
+        "title": "I Drank Water",
+        "category": "Hydrate Buddy"
+      },
+      {
+        "command": "hydrateBuddy.snooze",
+        "title": "Snooze Reminder",
+        "category": "Hydrate Buddy"
+      },
+      {
+        "command": "hydrateBuddy.toggle",
+        "title": "Enable / Disable Reminders",
+        "category": "Hydrate Buddy"
+      },
+      {
+        "command": "hydrateBuddy.setInterval",
+        "title": "Set Reminder Interval",
+        "category": "Hydrate Buddy"
+      },
+      {
+        "command": "hydrateBuddy.resetToday",
+        "title": "Reset Today's Count",
+        "category": "Hydrate Buddy"
+      }
+    ],
+    "configuration": {
+      "title": "Hydrate Buddy",
+      "properties": {
+        "hydrateBuddy.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable water-break reminders."
+        },
+        "hydrateBuddy.intervalMinutes": {
+          "type": "number",
+          "default": 45,
+          "minimum": 1,
+          "maximum": 480,
+          "description": "Minutes between water-break reminders."
+        },
+        "hydrateBuddy.snoozeMinutes": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 120,
+          "description": "Minutes to wait when you press Snooze."
+        },
+        "hydrateBuddy.dailyGoal": {
+          "type": "number",
+          "default": 8,
+          "minimum": 1,
+          "maximum": 50,
+          "description": "Number of water breaks you aim for each day."
+        },
+        "hydrateBuddy.reminderStyle": {
+          "type": "string",
+          "enum": [
+            "mascot",
+            "notification"
+          ],
+          "enumDescriptions": [
+            "Show the animated droplet buddy in a small panel beside your editor.",
+            "Show a regular VS Code notification instead."
+          ],
+          "default": "mascot",
+          "description": "How the reminder is shown."
+        },
+        "hydrateBuddy.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the next-reminder countdown in the status bar."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js",
+    "test:unit": "npm run compile && mocha --ui tdd \"out/test/unit/**/*.test.js\"",
+    "package": "vsce package --allow-missing-repository"
+  },
+  "overrides": {
+    "cheerio": "1.0.0"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^18.19.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-electron": "^2.3.9",
+    "@vscode/vsce": "^2.26.0",
+    "mocha": "^10.4.0",
+    "typescript": "^5.4.5"
+  }
+}
