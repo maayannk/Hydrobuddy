@@ -5,6 +5,12 @@
   "version": "1.0.0",
   "publisher": "hydrate-buddy",
   "license": "MIT",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#d6efff",
+    "theme": "light"
+  },
+  "pricing": "Free",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -119,7 +125,8 @@
     "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js",
     "test:unit": "npm run compile && mocha --ui tdd \"out/test/unit/**/*.test.js\"",
-    "package": "vsce package --allow-missing-repository"
+    "package": "vsce package --allow-missing-repository",
+    "publish": "vsce publish --allow-missing-repository"
   },
   "overrides": {
     "cheerio": "1.0.0"

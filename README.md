@@ -77,7 +77,7 @@ This creates `hydrate-buddy-1.0.0.vsix`. To install it, open the **Extensions** 
 code --install-extension hydrate-buddy-1.0.0.vsix
 ```
 
-> Before publishing to the Marketplace, change `publisher` in `package.json` to your own publisher ID, and add a `repository` field and a 128×128 PNG `icon`.
+To publish a new version to the Marketplace: `npx vsce login <publisher-id>` once, then `npm run publish`.
 
 ## How it works
 
