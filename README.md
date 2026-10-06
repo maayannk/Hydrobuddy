@@ -8,6 +8,7 @@
 
 - **Doesn't interrupt you.** The buddy opens in a side panel without taking focus, so you can finish your line of code first.
 - **Keyboard first.** Press <kbd>Enter</kbd> for "I drank water", <kbd>S</kbd> to snooze and <kbd>Esc</kbd> to dismiss.
+- **Reaches you outside VS Code.** If you're in a browser, chat or a meeting when it's water time, a small popup appears on top of whatever you're using. Click **I Drank Water** there and it's logged.
 - **Works across all your windows.** With five VS Code windows open, you still get one timer and one reminder. Answer it in any window and it clears everywhere.
 - **Private.** No account, no backend, no telemetry. Everything stays on your machine.
 - **Lightweight.** No runtime dependencies. One small timer per window.
@@ -62,6 +63,7 @@ You can bind any of these to a keyboard shortcut. For example, map `hydrateBuddy
 | `hydrateBuddy.snoozeMinutes` | `5` | Minutes to wait when you snooze (1–120) |
 | `hydrateBuddy.dailyGoal` | `8` | Water breaks you aim for each day |
 | `hydrateBuddy.mascot` | `drip` | `drip`, `hero`, `splashy`, `ember`, `duck`, `robot`, `cat` or `random` |
+| `hydrateBuddy.desktopPopup` | `whenAway` | `whenAway`: also pop up on your desktop when no VS Code window is focused. `always`: pop up on the desktop every time. `never`: remind only inside VS Code |
 | `hydrateBuddy.reminderStyle` | `mascot` | `mascot` (animated buddy) or `notification` (plain VS Code notification) |
 | `hydrateBuddy.showStatusBar` | `true` | Show the countdown in the status bar |
 
@@ -72,6 +74,9 @@ No. The buddy opens beside your editor without taking focus. It shakes to get yo
 
 **I have several VS Code windows open. Will I get several popups?**
 No. All windows share one timer, and the reminder appears only in the window you're using. Answering it anywhere clears it everywhere, and the next reminder is counted from that answer.
+
+**I'm not in VS Code when the reminder fires. Will I miss it?**
+No. When no VS Code window is focused, the reminder also appears as a small popup on top of the app you're using, with the same buttons. On Windows it doesn't take your keyboard focus, so you won't answer it by accident while typing. Set `hydrateBuddy.desktopPopup` to `never` to turn it off.
 
 **Where is my data stored?**
 In `~/.hydrate-buddy` on your machine. Nothing is ever sent anywhere.

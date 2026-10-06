@@ -8,3 +8,4 @@ out/test/**
 node_modules/**
 *.vsix
 docs/**
+scripts/**

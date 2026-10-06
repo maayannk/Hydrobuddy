@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { HydrateConfig, readConfig, SECTION, updateSetting } from './config';
 import { DashboardMessage, DashboardPanel } from './dashboardPanel';
+import { DesktopPopupHandle, showDesktopPopup } from './desktopPopup';
 import { MascotAction, MascotPanel } from './mascotPanel';
 import {
   Ack,
@@ -104,6 +105,10 @@ export class HydrateBuddy implements vscode.Disposable {
   private notifiedDueAt: number | null = null;
   private lastHeartbeat = 0;
   private randomPick: { dueAt: number | null; mascot: Mascot } | undefined;
+  /** OS-level popup shown while you're in another app. */
+  private desktop: { handle: DesktopPopupHandle; dueAt: number | null } | undefined;
+  /** When this window last lost focus (0 = unknown / at startup). */
+  private blurredAt = 0;
   private warnedOutdated = false;
 
   constructor(
@@ -141,6 +146,9 @@ export class HydrateBuddy implements vscode.Disposable {
         }
       }),
       vscode.window.onDidChangeWindowState((e) => {
+        if (!e.focused) {
+          this.blurredAt = Date.now();
+        }
         if (e.focused) {
           this.run('window focus', () => this.onWindowFocused());
         }
@@ -243,6 +251,7 @@ export class HydrateBuddy implements vscode.Disposable {
     }
     this.disposed = true;
     clearInterval(this.timer);
+    this.closeDesktopPopup();
     // Hand the reminder back and leave the window list, so another open window takes over.
     void this.store.update((s) => release(s, this.windowId)).catch(() => undefined);
     for (const d of this.disposables.splice(0)) {
@@ -418,7 +427,68 @@ export class HydrateBuddy implements vscode.Disposable {
         this.showNotification(s.dueAt);
       }
     }
+    this.syncDesktopPopup(mine);
     this.render();
+  }
+
+  /**
+   * While you're away from VS Code (no window focused), the window that owns the
+   * reminder also puts it on your screen as an OS popup. Answering there works
+   * like answering in VS Code; coming back to VS Code closes it.
+   */
+  private syncDesktopPopup(mine: boolean): void {
+    const s = this.state;
+    const mode = this.config.desktopPopup;
+    const focused = vscode.window.state.focused;
+
+    if (this.desktop && (!mine || this.desktop.dueAt !== s.dueAt || (mode === 'whenAway' && focused) || mode === 'never')) {
+      this.closeDesktopPopup(); // answered elsewhere, moved, or you're back in VS Code
+    }
+    if (!mine || this.desktop || mode === 'never' || s.dueAt === null) {
+      return;
+    }
+    // Wait a moment after losing focus: switching to another VS Code window moves
+    // the reminder there instead (that window claims it within a second).
+    if (mode === 'whenAway' && (focused || Date.now() - this.blurredAt < 2000)) {
+      return;
+    }
+
+    const dueAt = s.dueAt;
+    const buddy = this.buddyFor(dueAt);
+    const handle = showDesktopPopup({
+      title: 'Water time!',
+      name: buddy.name,
+      line: pick(buddy.lines).replace(/^💧\s*/u, ''),
+      count: s.stats.count,
+      goal: this.config.dailyGoal,
+      progress: `Today: ${s.stats.count} / ${this.config.dailyGoal} water breaks`,
+      snoozeLabel: `Snooze ${this.config.snoozeMinutes} min`,
+      imagePath: vscode.Uri.joinPath(this.context.extensionUri, 'media', 'mascots', `${buddy.id}.png`).fsPath,
+      intervalMinutes: this.config.intervalMinutes,
+    });
+    if (!handle) {
+      return;
+    }
+    const entry = { handle, dueAt };
+    this.desktop = entry;
+    handle.result.then(
+      (answer) => {
+        if (this.desktop === entry) {
+          this.desktop = undefined;
+        }
+        if (answer) {
+          // Same path as the in-editor buttons: logs once, clears every window.
+          this.run('desktop popup', () => this.acknowledge(answer, dueAt));
+        }
+      },
+      (err) => this.logError('desktop popup', err),
+    );
+  }
+
+  private closeDesktopPopup(): void {
+    const d = this.desktop;
+    this.desktop = undefined;
+    d?.handle.close();
   }
 
   /** The buddy for a given reminder; "Surprise me" keeps one pick per reminder. */

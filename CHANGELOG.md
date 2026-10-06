@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.4.1
+
+- Desktop popup is now sharp on high-DPI and scaled displays (125%, 150%…). Before, Windows stretched it and it looked blurry.
+- Cleaner popup design: no Windows title bar, rounded corners with a shadow (Windows 11), a thin accent line, a "HYDRATE BUDDY · NAME" header, a progress bar for today's goal, hover states and a small ✕ to close.
+- After "I Drank Water" the popup turns green and shows the updated count and next sip time.
+- Sharper buddy images.
+
+## 1.4.0
+
+- **Desktop popup when you're away from VS Code.** If no VS Code window is focused when it's water time (you're in a browser, chat or a meeting), the reminder also pops up on top of whatever app you're using. It shows your buddy and the same **I Drank Water / Snooze / Dismiss** buttons.
+- Answering the desktop popup logs the drink and clears the reminder in every VS Code window. Coming back to VS Code closes the popup, and the in-editor buddy is still there.
+- On Windows the popup never takes keyboard focus, so typing in another app can't answer it by accident. On macOS it's a native dialog; on Linux it uses zenity, or notify-send as a fallback.
+- New setting `hydrateBuddy.desktopPopup`: `whenAway` (default), `always` or `never`.
+- The extension now prefers to run on your local machine in remote sessions (SSH, WSL, containers), so the desktop popup appears on the screen you're actually using.
+
 ## 1.3.1
 
 - Fixed: choosing a buddy could fail with "hydrateBuddy.mascot is not a registered configuration" in a window that was updated without a reload. Your choice is now saved in Hydrate Buddy's own shared state, so it works right away and applies to every window. The setting is still updated whenever possible.
