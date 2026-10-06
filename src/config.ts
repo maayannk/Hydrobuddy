@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { isMascotChoice } from './webview/mascots';
 
 export const SECTION = 'hydrateBuddy';
 
@@ -11,6 +12,8 @@ export interface HydrateConfig {
   dailyGoal: number;
   reminderStyle: ReminderStyle;
   showStatusBar: boolean;
+  /** Mascot id, or "random". */
+  mascot: string;
 }
 
 function clamp(value: unknown, min: number, max: number, fallback: number): number {
@@ -28,6 +31,7 @@ export function readConfig(): HydrateConfig {
     dailyGoal: Math.round(clamp(c.get('dailyGoal'), 1, 50, 8)),
     reminderStyle: style === 'notification' ? 'notification' : 'mascot',
     showStatusBar: c.get<boolean>('showStatusBar', true),
+    mascot: isMascotChoice(c.get('mascot')) ? (c.get('mascot') as string) : 'drip',
   };
 }
 

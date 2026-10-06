@@ -1,22 +1,27 @@
 import * as vscode from 'vscode';
 import { DashboardViewState, renderDashboardHtml } from './webview/dashboardHtml';
+import { isMascotChoice } from './webview/mascots';
 
 export type DashboardMessage =
-  | { type: 'drank' | 'remindNow' | 'toggle' | 'openSettings' | 'reset' }
+  | { type: 'drank' | 'remindNow' | 'toggle' | 'openSettings' | 'reset' | 'chooseMascot' }
+  | { type: 'setMascot'; id: string }
   | { type: 'setInterval'; minutes: number };
 
-const SIMPLE: ReadonlySet<string> = new Set(['drank', 'remindNow', 'toggle', 'openSettings', 'reset']);
+const SIMPLE: ReadonlySet<string> = new Set(['drank', 'remindNow', 'toggle', 'openSettings', 'reset', 'chooseMascot']);
 
 function parseMessage(raw: unknown): DashboardMessage | 'ready' | undefined {
   if (!raw || typeof raw !== 'object') {
     return undefined;
   }
-  const msg = raw as { type?: unknown; minutes?: unknown };
+  const msg = raw as { type?: unknown; minutes?: unknown; id?: unknown };
   if (msg.type === 'ready') {
     return 'ready';
   }
   if (typeof msg.type === 'string' && SIMPLE.has(msg.type)) {
     return { type: msg.type } as DashboardMessage;
+  }
+  if (msg.type === 'setMascot' && isMascotChoice(msg.id)) {
+    return { type: 'setMascot', id: msg.id };
   }
   if (msg.type === 'setInterval' && typeof msg.minutes === 'number' && Number.isFinite(msg.minutes)) {
     return { type: 'setInterval', minutes: msg.minutes };

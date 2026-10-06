@@ -1,8 +1,8 @@
 {
   "name": "hydrate-buddy",
   "displayName": "Hydrate Buddy",
-  "description": "A cute, non-intrusive water-break reminder for developers. A little droplet buddy pops up when it's time to drink water.",
-  "version": "1.0.0",
+  "description": "Your coding buddy for water breaks. A cute animated mascot (superhero, dragon, pocket monster, rubber duck, robot, cat and more) reminds you to drink water, stays in sync across all your VS Code windows, and keeps every stat on your machine.",
+  "version": "1.3.1",
   "publisher": "hydrate-buddy",
   "license": "MIT",
   "icon": "media/icon.png",
@@ -22,8 +22,14 @@
     "hydration",
     "reminder",
     "health",
+    "wellness",
     "break",
-    "wellness"
+    "mascot",
+    "pet",
+    "productivity",
+    "developer",
+    "focus",
+    "timer"
   ],
   "activationEvents": [
     "onStartupFinished"
@@ -36,6 +42,11 @@
         "title": "Show Dashboard",
         "category": "Hydrate Buddy",
         "icon": "$(dashboard)"
+      },
+      {
+        "command": "hydrateBuddy.chooseMascot",
+        "title": "Choose Your Buddy",
+        "category": "Hydrate Buddy"
       },
       {
         "command": "hydrateBuddy.remindNow",
@@ -74,6 +85,7 @@
         "hydrateBuddy.enabled": {
           "type": "boolean",
           "default": true,
+          "scope": "application",
           "description": "Enable water-break reminders."
         },
         "hydrateBuddy.intervalMinutes": {
@@ -81,6 +93,7 @@
           "default": 45,
           "minimum": 1,
           "maximum": 480,
+          "scope": "application",
           "description": "Minutes between water-break reminders."
         },
         "hydrateBuddy.snoozeMinutes": {
@@ -88,6 +101,7 @@
           "default": 5,
           "minimum": 1,
           "maximum": 120,
+          "scope": "application",
           "description": "Minutes to wait when you press Snooze."
         },
         "hydrateBuddy.dailyGoal": {
@@ -95,6 +109,7 @@
           "default": 8,
           "minimum": 1,
           "maximum": 50,
+          "scope": "application",
           "description": "Number of water breaks you aim for each day."
         },
         "hydrateBuddy.reminderStyle": {
@@ -108,11 +123,49 @@
             "Show a regular VS Code notification instead."
           ],
           "default": "mascot",
+          "scope": "application",
           "description": "How the reminder is shown."
+        },
+        "hydrateBuddy.mascot": {
+          "type": "string",
+          "enum": [
+            "drip",
+            "hero",
+            "splashy",
+            "ember",
+            "duck",
+            "robot",
+            "cat",
+            "random"
+          ],
+          "enumItemLabels": [
+            "Drip",
+            "Captain Hydro",
+            "Splashy",
+            "Ember",
+            "Quackers",
+            "Bit",
+            "Mochi",
+            "Surprise me"
+          ],
+          "enumDescriptions": [
+            "Classic: the original droplet buddy.",
+            "Superhero: a caped crusader who never lets a teammate go thirsty.",
+            "Pocket monster: a wild water-type critter.",
+            "Fantasy dragon: even dragons hydrate.",
+            "Rubber duck: your debugging partner.",
+            "Robot: monitors your coolant levels.",
+            "Dev cat: sits on your keyboard until you drink.",
+            "A different buddy for every reminder."
+          ],
+          "default": "drip",
+          "scope": "application",
+          "description": "Which buddy reminds you to drink water."
         },
         "hydrateBuddy.showStatusBar": {
           "type": "boolean",
           "default": true,
+          "scope": "application",
           "description": "Show the next-reminder countdown in the status bar."
         }
       }
@@ -120,7 +173,7 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
+    "compile": "node -e \"require('fs').rmSync('out',{recursive:true,force:true})\" && tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js",

@@ -2,7 +2,11 @@ import * as vscode from 'vscode';
 import { HydrateBuddy, HydrateSnapshot } from './controller';
 
 export interface HydrateBuddyApi {
+  /** Resolves once startup syncing with other windows is done. */
+  ready: Promise<void>;
   snapshot(): HydrateSnapshot;
+  /** Same action as clicking a buddy in the dashboard. */
+  setMascot(id: string): Promise<void>;
 }
 
 let buddy: HydrateBuddy | undefined;
@@ -31,6 +35,7 @@ export function activate(context: vscode.ExtensionContext): HydrateBuddyApi {
 
   register('hydrateBuddy.showDashboard', () => instance.showDashboard());
   register('hydrateBuddy.remindNow', () => instance.remindNow());
+  register('hydrateBuddy.chooseMascot', () => instance.chooseMascot());
   register('hydrateBuddy.logWater', () => instance.logDrink());
   register('hydrateBuddy.snooze', () => instance.snooze());
   register('hydrateBuddy.toggle', () => instance.toggle());
@@ -39,7 +44,7 @@ export function activate(context: vscode.ExtensionContext): HydrateBuddyApi {
   register('hydrateBuddy.resetToday', (opts?: { confirm?: boolean }) => instance.resetToday(opts?.confirm !== false));
 
   log.appendLine(`[${new Date().toISOString()}] Hydrate Buddy activated.`);
-  return { snapshot: () => instance.snapshot() };
+  return { ready: instance.ready, snapshot: () => instance.snapshot(), setMascot: (id) => instance.setMascot(id) };
 }
 
 export function deactivate(): void {

@@ -100,3 +100,20 @@ export function formatCountdown(ms: number): string {
   const ss = String(s).padStart(2, '0');
   return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${ss}` : `${m}:${ss}`;
 }
+
+/**
+ * Consecutive days (ending today) on which the goal was met. Today only counts
+ * once the goal is reached, but an unfinished today doesn't break the streak.
+ */
+export function goalStreak(stats: HydrationStats, now: Date, goal: number): number {
+  const days = lastNDays(stats, now, HISTORY_DAYS + 1);
+  let i = days.length - 1;
+  let streak = 0;
+  if (days[i].count < goal) {
+    i--;
+  }
+  for (; i >= 0 && days[i].count >= goal; i--) {
+    streak++;
+  }
+  return streak;
+}

@@ -7,3 +7,4 @@ out/test/**
 .gitignore
 node_modules/**
 *.vsix
+docs/**

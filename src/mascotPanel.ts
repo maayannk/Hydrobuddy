@@ -60,6 +60,20 @@ export class MascotPanel implements vscode.Disposable {
     panel?.dispose();
   }
 
+  /**
+   * The reminder was answered in another window: show a short note in the buddy's
+   * bubble, then close. Closing this way never counts as a dismiss.
+   */
+  closeWithNote(title: string, detail: string, delayMs = 1800): void {
+    const panel = this.panel;
+    if (!panel) {
+      return;
+    }
+    this.panel = undefined;
+    void panel.webview.postMessage({ type: 'handled', title, detail });
+    setTimeout(() => panel.dispose(), delayMs);
+  }
+
   dispose(): void {
     this.hide();
   }
